@@ -184,4 +184,7 @@ interface IDisplayManager {
 
     // Query for DISPLAY_DECORATION support.
     DisplayDecorationSupport getDisplayDecorationSupport(int displayId);
+
+    // set display offsets for logical display
+    void setDisplayOffsets(int displayId, int x, int y);
 }

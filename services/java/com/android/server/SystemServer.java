@@ -39,6 +39,7 @@ import android.app.SystemServiceRegistry;
 import android.app.admin.DevicePolicySafetyChecker;
 import android.app.usage.UsageStatsManagerInternal;
 import android.content.ContentResolver;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.IPackageManager;
@@ -2776,6 +2777,14 @@ public final class SystemServer implements Dumpable {
         }
         t.traceEnd();
 
+        t.traceBegin("PostureProcessorService");
+        try {
+            startPostureProcessor(context);
+        } catch (Throwable e) {
+            reportWtf("starting " + "com.thain.duo.PostureProcessorService", e);
+        }
+        t.traceEnd();
+
         t.traceBegin("GameManagerService");
         mSystemServiceManager.startService(GAME_MANAGER_SERVICE_CLASS);
         t.traceEnd();
@@ -3215,6 +3224,13 @@ public final class SystemServer implements Dumpable {
         t.traceBegin("StartAmbientContextService");
         mSystemServiceManager.startService(AmbientContextManagerService.class);
         t.traceEnd();
+    }
+
+    private static void startPostureProcessor(Context context) {
+        PackageManagerInternal pm = LocalServices.getService(PackageManagerInternal.class);
+        Intent intent = new Intent();
+        intent.setComponent(ComponentName.unflattenFromString("com.thain.duo/.PostureProcessorService"));
+        context.startServiceAsUser(intent, UserHandle.SYSTEM);
     }
 
     private static void startSystemUi(Context context, WindowManagerService windowManager) {
